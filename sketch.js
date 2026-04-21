@@ -1,5 +1,5 @@
-// Project Title
-// Your Name
+// Bird Fighter
+// Chuyan Wang
 // Date
 //
 // Extra for Experts:
