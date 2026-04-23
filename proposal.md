@@ -8,10 +8,9 @@ Needs to have:
 - 1 boss
 - sound effects
 - background music
-- changing background and environment
+- changing background
 - main menu
 - 1 playable level
-- implementing health packs and powerups
 - attack projectiles (enemies and friendly)
 - level should be ~ 2 minutes long
  
@@ -20,6 +19,8 @@ Nice to have
 - more than 1 level
 - 1 or 2 new bosses with the the addition of each level
 - 2 - 3 new normal enemy types in every new level
-- different environment and background with each new level
+- different background with each new level
+- implementing health packs and powerups
+- tutorial
 
 
