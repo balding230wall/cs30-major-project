@@ -9,14 +9,22 @@ let redBirdImg;
 let parkBackgroundImg;
 let clownImg;
 let crazyClownImg;
-let amuesmentRobotImg;
+let amusementRobotImg;
+let mainProjectileImg;
+let rocketProjectileImg;
+let clownProjectileImg;
+let crazyClownProjectileImg;
 
 function preload(){
   redBirdImg = loadImage("redBird.png");
-  parkBackgroundImg = loadImage("amuesmentPark.png");
-  clownImg = loadImage("amuesmentclown.png");
-  crazyClownImg = loadImage("amuesmentcrazyclown.png");
-  amuesmentRobotImg = loadImage("amuesmentrobot.png");
+  parkBackgroundImg = loadImage("amusementparkbackground.png");
+  clownImg = loadImage("amusementclown.png");
+  crazyClownImg = loadImage("amusementcrazyclown.png");
+  amusementRobotImg = loadImage("amusementrobot.png");
+  mainProjectileImg = loadImage("blueenergy.png");
+  rocketProjectileImg = loadImage("rocketprojectile.png");
+  clownProjectileImg = loadImage("clownprojectile.png");
+  crazyClownProjectileImg = loadImage("crazyclownprojectile.png");
 
 }
 
@@ -28,10 +36,21 @@ function setup() {
 
 function draw() {
   background(220);
+  createImages();
+}
+
+function createImages() {
   image(parkBackgroundImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
   image(redBirdImg, mouseX, mouseY, redBirdImg.width * 0.2, redBirdImg.height * 0.2);
   image(clownImg, windowWidth - 100, windowHeight - 300, clownImg.width * 0.2, clownImg.height * 0.2);
   image(crazyClownImg, windowWidth - 100, windowHeight - 200, crazyClownImg.width * 0.2, crazyClownImg.height * 0.2);
-  image(amuesmentRobotImg, windowWidth - 100, windowHeight - 100, amuesmentRobotImg.width * 0.2, amuesmentRobotImg.height * 0.2);
+  image(amusementRobotImg, windowWidth - 100, windowHeight - 100, amusementRobotImg.width * 0.2, amusementRobotImg.height * 0.2);
+  image(mainProjectileImg, mouseX + redBirdImg.width * 0.1, mouseY, mainProjectileImg.width * 0.1, mainProjectileImg.height * 0.1);
+  image(rocketProjectileImg, amusementRobotImg.x - amusementRobotImg.width * 0.1, amusementRobotImg.y, rocketProjectileImg.width * 0.1, rocketProjectileImg.height * 0.1);
+  image(clownProjectileImg, clownImg.x - clownImg.width * 0.1, clownImg.y, clownProjectileImg.width * 0.1, clownProjectileImg.height * 0.1);
+  image(crazyClownProjectileImg, crazyClownImg.x - crazyClownImg.width * 0.1, crazyClownImg.y, crazyClownProjectileImg.width * 0.1, crazyClownProjectileImg.height * 0.1);
+}
 
+function mouseClicked(){
+  image(mainProjectileImg, mouseX + redBirdImg.width * 0.1, mouseY, mainProjectileImg.width * 0.1, mainProjectileImg.height * 0.1);
 }
