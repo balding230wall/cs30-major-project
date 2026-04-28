@@ -28,6 +28,22 @@ function preload(){
 
 }
 
+class Projectiles{
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+  }
+}
+
+class Characters{
+  constructor(x, y){
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+  }
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
