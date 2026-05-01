@@ -19,6 +19,12 @@ let birdShip;
 let clownEnemy;
 let crazyClownEnemy;
 
+let characterScale = 0.2;
+let projectileScale = 0.1;
+
+let backgroundX = 0;
+
+
 function preload(){
   redBirdImg = loadImage("redBird.png");
   parkBackgroundImg = loadImage("amusementparkbackground.png");
@@ -36,7 +42,7 @@ function preload(){
 function setup() {
   createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
-  birdShip = new Character(mouseX, mouseY, redBirdImg);
+  birdShip = new Character(200, 200, redBirdImg);
   clownEnemy = new Character(500, 500, clownImg);
   crazyClownEnemy = new Character(500, 200, crazyClownImg);
 }
@@ -45,12 +51,20 @@ function draw() {
   background(220);
   createImages();
   birdShip.display();
+  birdShip.update();
   clownEnemy.display();
   crazyClownEnemy.display();
+
+  backgroundX -= 2;
 }
 
 function createImages() {
-  image(parkBackgroundImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+  image(parkBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+  image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
+
+  if (backgroundX <= windowWidth * -1){
+    backgroundX = 0;
+  }
 }
 
 function mouseClicked(){
@@ -66,10 +80,10 @@ class Character{
   }
   
   display(){
-    image(this.image, this.x, this.y);
+    image(this.image, this.x, this.y, this.image.width * characterScale, this.image.height * characterScale);
 
     for(let projectile of this.projectileArray){
-      if (projectile.isOnScreen){
+      if (projectile.isOnScreen()){
         projectile.update();
         projectile.display();
       }
@@ -79,8 +93,13 @@ class Character{
     }
   }
 
+  update(){
+    this.x = mouseX;
+    this.y = mouseY;
+  }
+
   fire(){
-    let thatProjectile = new Projectiles(this.x, this.y, 5, 0, mainProjectileImg);
+    let thatProjectile = new Projectiles(this.x + this.image.width * characterScale * 0.5, this.y, 5, 0, mainProjectileImg);
     this.projectileArray.push(thatProjectile);
   }
 }
@@ -95,7 +114,7 @@ class Projectiles{
   }
 
   display(){
-    image(this.image, this.x, this.y);
+    image(this.image, this.x, this.y, this.image.width * projectileScale, this.image.height * projectileScale);
   }
 
   update(){
@@ -103,6 +122,6 @@ class Projectiles{
   }
 
   isOnScreen(){
-    return this.x > 0;
+    return this.x > 0 && this.x < windowWidth;
   }
 }
