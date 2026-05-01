@@ -16,6 +16,8 @@ let clownProjectileImg;
 let crazyClownProjectileImg;
 
 let birdShip;
+let clownEnemy;
+let crazyClownEnemy;
 
 function preload(){
   redBirdImg = loadImage("redBird.png");
@@ -35,12 +37,16 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
   birdShip = new Character(mouseX, mouseY, redBirdImg);
+  clownEnemy = new Character(500, 500, clownImg);
+  crazyClownEnemy = new Character(500, 200, crazyClownImg);
 }
 
 function draw() {
   background(220);
   createImages();
   birdShip.display();
+  clownEnemy.display();
+  crazyClownEnemy.display();
 }
 
 function createImages() {
