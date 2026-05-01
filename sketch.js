@@ -18,6 +18,7 @@ let crazyClownProjectileImg;
 let birdShip;
 let clownEnemy;
 let crazyClownEnemy;
+let robotEnemy;
 
 let characterScale = 0.2;
 let projectileScale = 0.1;
@@ -42,18 +43,27 @@ function preload(){
 function setup() {
   createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
-  birdShip = new Character(200, 200, redBirdImg);
-  clownEnemy = new Character(500, 500, clownImg);
-  crazyClownEnemy = new Character(500, 200, crazyClownImg);
+  birdShip = new FriendlyCharacter(200, 200, redBirdImg);
+  clownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg);
+  crazyClownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg);
+  robotEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg);
 }
 
 function draw() {
   background(220);
   createImages();
+
   birdShip.display();
   birdShip.update();
+
   clownEnemy.display();
+  clownEnemy.update();
+
   crazyClownEnemy.display();
+  crazyClownEnemy.update();
+
+  robotEnemy.display();
+  robotEnemy.update();
 
   backgroundX -= 2;
 }
@@ -92,15 +102,43 @@ class Character{
       }
     }
   }
+}
 
-  update(){
+class FriendlyCharacter extends Character{
+    update(){
     this.x = mouseX;
     this.y = mouseY;
   }
 
   fire(){
-    let thatProjectile = new Projectiles(this.x + this.image.width * characterScale * 0.5, this.y, 5, 0, mainProjectileImg);
-    this.projectileArray.push(thatProjectile);
+    let thatFriendlyProjectile = new FriendlyProjectile(this.x + this.image.width * characterScale * 0.5, this.y, 5, 0, mainProjectileImg);
+    this.projectileArray.push(thatFriendlyProjectile);
+  }
+}
+
+class EnemyCharacter extends Character{
+  constructor(x, y, theImage, dx, dy){
+    super(x, y, theImage);
+
+    this.dx = random(-10, -5);
+    this.dy = random(-5, 5);
+  }
+
+    update(){
+      this.x += this.dx;
+      this.y += this.dy;
+      
+      if (this.x <= windowWidth/2 || this.x >= windowWidth){
+        this.dx *= -1;
+      }
+      if (this.y <= 0 || this.y >= windowHeight){
+        this.dy *= -1;
+      }
+  }
+
+  fire(){
+    let thatEnemyProjectile = new EnemyProjectile(this.x + this.image.width * characterScale * 0.5, this.y, 5, 0, clownProjectileImg);
+    this.projectileArray.push(thatEnemyProjectile);
   }
 }
 
@@ -123,5 +161,17 @@ class Projectiles{
 
   isOnScreen(){
     return this.x > 0 && this.x < windowWidth;
+  }
+}
+
+class FriendlyProjectile extends Projectiles{
+  constructor(x, y, dx, dy, theImage){
+    super(x, y, dx, dy, theImage);
+  }
+}
+
+class EnemyProjectile extends Projectiles{
+  constructor(x, y, dx, dy, theImage){
+    super(x, y, dx, dy, theImage);
   }
 }
