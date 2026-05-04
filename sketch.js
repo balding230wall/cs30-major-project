@@ -67,30 +67,83 @@ function createBackground() {
 }
 
 function createCharacters(){
-  birdShip.display();
   birdShip.update();
+  birdShip.display();
 
-  clownEnemy.display();
-  clownEnemy.update();
-  if (frameCount % 60 === 0){
-    clownEnemy.clownFire();
+  if (clownEnemy.alive){
+    clownEnemy.update();
+    clownEnemy.display();
+    
+    if (frameCount % 60 === 0){
+      clownEnemy.clownFire();
+    }
+
+    enemyProjHitPlayer(clownEnemy);
+    playerProjHitEnemy(clownEnemy);
   }
 
-  crazyClownEnemy.display();
-  crazyClownEnemy.update();
-  if (frameCount % 60 === 0){
-    crazyClownEnemy.crazyClownFire();
+  if (crazyClownEnemy.alive){
+    crazyClownEnemy.update();
+    crazyClownEnemy.display();
+    
+    if (frameCount % 60 === 0){
+      crazyClownEnemy.crazyClownFire();
+    }
+
+    enemyProjHitPlayer(crazyClownEnemy);
+    playerProjHitEnemy(crazyClownEnemy);
   }
 
-  robotEnemy.display();
-  robotEnemy.update();
-  if (frameCount % 60 === 0){
-    robotEnemy.robotFire();
+  if (robotEnemy.alive){
+    robotEnemy.update();
+    robotEnemy.display();
+    
+    if (frameCount % 60 === 0){
+      robotEnemy.robotFire();
+    }
+
+    enemyProjHitPlayer(robotEnemy);
+    playerProjHitEnemy(robotEnemy);
   }
 }
 
 function mouseClicked(){
   birdShip.fire();
+}
+
+function isColliding(character, projectile){
+  let characterWidth = character.image.width * characterScale;
+  let characterHeight = character.image.height * characterScale;
+
+  let projectileWidth = projectile.image.width * projectileScale;
+  let projectileHeight = projectile.image.height * projectileScale;
+
+  let xDistance = abs(character.x - projectile.x);
+  let yDistance = abs(character.y - projectile.y);
+
+  let isOverlappingX = xDistance < (characterWidth/2 + projectileWidth/2);
+  let isOverlappingY = yDistance < (characterHeight/2 + projectileHeight/2);
+
+  return isOverlappingX && isOverlappingY;
+}
+
+function enemyProjHitPlayer(enemy){
+  for (let i = enemy.projectileArray.length - 1; i >= 0; i--){
+    let projectile = enemy.projectileArray[i];
+    if (isColliding(birdShip, projectile)){
+      enemy.projectileArray.splice(i, 1);
+    }
+  }
+}
+
+function playerProjHitEnemy(enemy){
+  for (let i = birdShip.projectileArray.length - 1; i >= 0; i--){
+    let projectile = birdShip.projectileArray[i];
+    if (isColliding(enemy, projectile)){
+      birdShip.projectileArray.splice(i, 1);
+      enemy.alive = false;
+    }
+  }
 }
 
 class Character{
@@ -134,6 +187,7 @@ class EnemyCharacter extends Character{
 
     this.dx = random(-10, -5);
     this.dy = random(-5, 5);
+    this.alive = true;
   }
 
   update(){
