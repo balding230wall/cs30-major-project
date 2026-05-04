@@ -51,29 +51,41 @@ function setup() {
 
 function draw() {
   background(220);
-  createImages();
-
-  birdShip.display();
-  birdShip.update();
-
-  clownEnemy.display();
-  clownEnemy.update();
-
-  crazyClownEnemy.display();
-  crazyClownEnemy.update();
-
-  robotEnemy.display();
-  robotEnemy.update();
+  createBackground();
+  createCharacters();
 
   backgroundX -= 2;
 }
 
-function createImages() {
+function createBackground() {
   image(parkBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
   image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
 
   if (backgroundX <= windowWidth * -1){
     backgroundX = 0;
+  }
+}
+
+function createCharacters(){
+  birdShip.display();
+  birdShip.update();
+
+  clownEnemy.display();
+  clownEnemy.update();
+  if (frameCount % 60 === 0){
+    clownEnemy.clownFire();
+  }
+
+  crazyClownEnemy.display();
+  crazyClownEnemy.update();
+  if (frameCount % 60 === 0){
+    crazyClownEnemy.crazyClownFire();
+  }
+
+  robotEnemy.display();
+  robotEnemy.update();
+  if (frameCount % 60 === 0){
+    robotEnemy.robotFire();
   }
 }
 
@@ -92,7 +104,7 @@ class Character{
   display(){
     image(this.image, this.x, this.y, this.image.width * characterScale, this.image.height * characterScale);
 
-    for(let projectile of this.projectileArray){
+    for (let projectile of this.projectileArray){
       if (projectile.isOnScreen()){
         projectile.update();
         projectile.display();
@@ -105,13 +117,13 @@ class Character{
 }
 
 class FriendlyCharacter extends Character{
-    update(){
+  update(){
     this.x = mouseX;
     this.y = mouseY;
   }
 
   fire(){
-    let thatFriendlyProjectile = new FriendlyProjectile(this.x + this.image.width * characterScale * 0.5, this.y, 5, 0, mainProjectileImg);
+    let thatFriendlyProjectile = new FriendlyProjectile(this.x + this.image.width * characterScale * 0.5, this.y, 10, 0, mainProjectileImg);
     this.projectileArray.push(thatFriendlyProjectile);
   }
 }
@@ -124,21 +136,31 @@ class EnemyCharacter extends Character{
     this.dy = random(-5, 5);
   }
 
-    update(){
-      this.x += this.dx;
-      this.y += this.dy;
+  update(){
+    this.x += this.dx;
+    this.y += this.dy;
       
-      if (this.x <= windowWidth/2 || this.x >= windowWidth){
-        this.dx *= -1;
-      }
-      if (this.y <= 0 || this.y >= windowHeight){
-        this.dy *= -1;
-      }
+    if (this.x <= windowWidth/2 || this.x >= windowWidth){
+      this.dx *= -1;
+    }
+    if (this.y <= 0 || this.y >= windowHeight){
+      this.dy *= -1;
+    }
   }
 
-  fire(){
-    let thatEnemyProjectile = new EnemyProjectile(this.x + this.image.width * characterScale * 0.5, this.y, 5, 0, clownProjectileImg);
+  clownFire(){
+    let thatEnemyProjectile = new EnemyProjectile(this.x - this.image.width * characterScale * 0.5, this.y, -10, 0, clownProjectileImg);
     this.projectileArray.push(thatEnemyProjectile);
+  }
+
+  crazyClownFire(){
+    let anotherEnemyProjectile = new EnemyProjectile(this.x - this.image.width * characterScale * 0.5, this.y, -10, 0, crazyClownProjectileImg);
+    this.projectileArray.push(anotherEnemyProjectile);
+  }
+
+  robotFire(){
+    let oneMoreEnemyProjectile = new EnemyProjectile(this.x - this.image.width * characterScale * 0.5, this.y, -10, 0, rocketProjectileImg);
+    this.projectileArray.push(oneMoreEnemyProjectile);
   }
 }
 

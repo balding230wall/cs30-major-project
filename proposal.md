@@ -1,5 +1,5 @@
 ## Project Description
-My project will be based on a childhood video game I used to play on my ipad. You control a little pixlated bird in a plane as he flies through different levels, fighting
+My project will be based on a childhood video game I used to play on my ipad. You control a little pixelated bird in a plane as he flies through different levels, fighting
 different enemies and unique bosses. The environment of each level is different, with some that I remember being in space, with others being in amuesment parks and desserts.
 
 Needs to have:
