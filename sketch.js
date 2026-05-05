@@ -55,6 +55,7 @@ function draw() {
   createCharacters();
 
   backgroundX -= 2;
+
 }
 
 function createBackground() {
@@ -67,8 +68,10 @@ function createBackground() {
 }
 
 function createCharacters(){
-  birdShip.update();
-  birdShip.display();
+  if (birdShip.health > 0){
+    birdShip.update();
+    birdShip.display();
+  }
 
   if (clownEnemy.alive){
     clownEnemy.update();
@@ -121,8 +124,8 @@ function isColliding(character, projectile){
   let xDistance = abs(character.x - projectile.x);
   let yDistance = abs(character.y - projectile.y);
 
-  let isOverlappingX = xDistance < (characterWidth/2 + projectileWidth/2);
-  let isOverlappingY = yDistance < (characterHeight/2 + projectileHeight/2);
+  let isOverlappingX = xDistance < characterWidth/2 + projectileWidth/2;
+  let isOverlappingY = yDistance < characterHeight/2 + projectileHeight/2;
 
   return isOverlappingX && isOverlappingY;
 }
@@ -132,6 +135,7 @@ function enemyProjHitPlayer(enemy){
     let projectile = enemy.projectileArray[i];
     if (isColliding(birdShip, projectile)){
       enemy.projectileArray.splice(i, 1);
+      birdShip.health --;
     }
   }
 }
@@ -170,6 +174,12 @@ class Character{
 }
 
 class FriendlyCharacter extends Character{
+  constructor(x, y, theImage, health){
+    super(x, y, theImage);
+
+    this.health = 3;
+  }
+
   update(){
     this.x = mouseX;
     this.y = mouseY;
