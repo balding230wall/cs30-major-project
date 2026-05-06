@@ -14,6 +14,8 @@ let mainProjectileImg;
 let rocketProjectileImg;
 let clownProjectileImg;
 let crazyClownProjectileImg;
+let mainMenuImg;
+let lossScreenImg;
 
 let birdShip;
 let clownEnemy;
@@ -25,6 +27,8 @@ let projectileScale = 0.1;
 
 let backgroundX = 0;
 
+let gameStart = false;
+let gameEnded = true;
 
 function preload(){
   redBirdImg = loadImage("redBird.png");
@@ -36,6 +40,8 @@ function preload(){
   rocketProjectileImg = loadImage("rocketprojectile.png");
   clownProjectileImg = loadImage("clownprojectile.png");
   crazyClownProjectileImg = loadImage("crazyclownprojectile.png");
+  mainMenuImg = loadImage("mainmenu.png");
+  lossScreenImg = loadImage("lossscreen.png");
 
 }
 
@@ -51,67 +57,102 @@ function setup() {
 
 function draw() {
   background(220);
+  createMainMenu();
   createBackground();
   createCharacters();
+  endGame();
+}
 
-  backgroundX -= 2;
-
+function createMainMenu(){
+  if (!gameStart){
+    if (gameEnded){
+      image(mainMenuImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+    }
+  }
 }
 
 function createBackground() {
-  image(parkBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
-  image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
+  if (gameStart){
+    if (!gameEnded){
+      image(parkBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+      image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
 
-  if (backgroundX <= windowWidth * -1){
-    backgroundX = 0;
+      if (backgroundX <= windowWidth * -1){
+        backgroundX = 0;
+      }
+
+      backgroundX -= 2;
+    }
   }
 }
 
 function createCharacters(){
-  if (birdShip.health > 0){
-    birdShip.update();
-    birdShip.display();
-  }
+  if (gameStart){
+    if (!gameEnded){
+      if (birdShip.health > 0){
+        birdShip.update();
+        birdShip.display();
+      }
+      
+      if (clownEnemy.alive){
+        clownEnemy.update();
+        clownEnemy.display();
+        
+        if (frameCount % 60 === 0){
+          clownEnemy.clownFire();
+        }
 
-  if (clownEnemy.alive){
-    clownEnemy.update();
-    clownEnemy.display();
-    
-    if (frameCount % 60 === 0){
-      clownEnemy.clownFire();
+        enemyProjHitPlayer(clownEnemy);
+        playerProjHitEnemy(clownEnemy);
+      }
+
+      if (crazyClownEnemy.alive){
+        crazyClownEnemy.update();
+        crazyClownEnemy.display();
+        
+        if (frameCount % 60 === 0){
+          crazyClownEnemy.crazyClownFire();
+        }
+
+        enemyProjHitPlayer(crazyClownEnemy);
+        playerProjHitEnemy(crazyClownEnemy);
+      }
+
+      if (robotEnemy.alive){
+        robotEnemy.update();
+        robotEnemy.display();
+        
+        if (frameCount % 60 === 0){
+          robotEnemy.robotFire();
+        }
+
+        enemyProjHitPlayer(robotEnemy);
+        playerProjHitEnemy(robotEnemy);
+      }
     }
-
-    enemyProjHitPlayer(clownEnemy);
-    playerProjHitEnemy(clownEnemy);
-  }
-
-  if (crazyClownEnemy.alive){
-    crazyClownEnemy.update();
-    crazyClownEnemy.display();
-    
-    if (frameCount % 60 === 0){
-      crazyClownEnemy.crazyClownFire();
-    }
-
-    enemyProjHitPlayer(crazyClownEnemy);
-    playerProjHitEnemy(crazyClownEnemy);
-  }
-
-  if (robotEnemy.alive){
-    robotEnemy.update();
-    robotEnemy.display();
-    
-    if (frameCount % 60 === 0){
-      robotEnemy.robotFire();
-    }
-
-    enemyProjHitPlayer(robotEnemy);
-    playerProjHitEnemy(robotEnemy);
   }
 }
 
 function mouseClicked(){
-  birdShip.fire();
+  if (!gameStart){
+    if (gameEnded){
+      gameStart = true;
+      gameEnded = false;
+    }
+  }
+
+  if (gameStart){
+    if (gameEnded){
+      gameStart = false;
+      birdShip.health = 3;
+    }
+  }
+
+  if (gameStart){
+    if (!gameEnded){
+      birdShip.fire();
+    }
+  }
 }
 
 function isColliding(character, projectile){
@@ -147,6 +188,13 @@ function playerProjHitEnemy(enemy){
       birdShip.projectileArray.splice(i, 1);
       enemy.alive = false;
     }
+  }
+}
+
+function endGame(){
+  if (birdShip.health <= 0){
+    gameEnded = true;
+    image(lossScreenImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
   }
 }
 
