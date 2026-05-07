@@ -7,6 +7,7 @@
 
 let redBirdImg;
 let parkBackgroundImg;
+let flippedBackgroundImg;
 let clownImg;
 let crazyClownImg;
 let amusementRobotImg;
@@ -16,6 +17,7 @@ let clownProjectileImg;
 let crazyClownProjectileImg;
 let mainMenuImg;
 let lossScreenImg;
+let heartImg;
 
 let birdShip;
 let clownEnemy;
@@ -24,6 +26,7 @@ let robotEnemy;
 
 let characterScale = 0.2;
 let projectileScale = 0.1;
+let heartScale = 0.05;
 
 let backgroundX = 0;
 
@@ -33,6 +36,7 @@ let gameEnded = true;
 function preload(){
   redBirdImg = loadImage("redBird.png");
   parkBackgroundImg = loadImage("amusementparkbackground.png");
+  flippedBackgroundImg = loadImage("flippedbackgroundimage.png");
   clownImg = loadImage("amusementclown.png");
   crazyClownImg = loadImage("amusementcrazyclown.png");
   amusementRobotImg = loadImage("amusementrobot.png");
@@ -42,7 +46,7 @@ function preload(){
   crazyClownProjectileImg = loadImage("crazyclownprojectile.png");
   mainMenuImg = loadImage("mainmenu.png");
   lossScreenImg = loadImage("lossscreen.png");
-
+  heartImg = loadImage("heart.png");
 }
 
 
@@ -60,6 +64,7 @@ function draw() {
   createMainMenu();
   createBackground();
   createCharacters();
+  createHearts();
   endGame();
 }
 
@@ -74,7 +79,7 @@ function createMainMenu(){
 function createBackground() {
   if (gameStart){
     if (!gameEnded){
-      image(parkBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+      image(flippedBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
       image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
 
       if (backgroundX <= windowWidth * -1){
@@ -128,6 +133,16 @@ function createCharacters(){
 
         enemyProjHitPlayer(robotEnemy);
         playerProjHitEnemy(robotEnemy);
+      }
+    }
+  }
+}
+
+function createHearts(){
+  if (gameStart){
+    if (!gameEnded){
+      for (let i = 0; i < birdShip.health; i++){
+        image(heartImg, (heartImg.width/2 + i * heartImg.width) * heartScale, heartImg.height/2 * heartScale, heartImg.width * heartScale, heartImg.height * heartScale);
       }
     }
   }
