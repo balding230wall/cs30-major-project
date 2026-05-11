@@ -94,11 +94,34 @@ function createBackground() {
 function createCharacters(){
   if (gameStart){
     if (!gameEnded){
+      
       if (birdShip.health > 0){
         birdShip.update();
         birdShip.display();
       }
       
+
+      if (frameCount % 120 === 0){
+        let thatClownEnemy = new EnemyCharacter(clownEnemy.x, clownEnemy.y, clownImg, clownEnemy.dx, clownEnemy.dy);
+        clownEnemy.characterArray.push(thatClownEnemy);
+      }
+      for (let enemy of clownEnemy.characterArray){
+        if (clownEnemy.alive){
+          clownEnemy.update();
+          clownEnemy.display();
+        
+          if (frameCount % 60 === 0){
+            clownEnemy.clownFire();
+          }
+
+          enemyProjHitPlayer(clownEnemy);
+          playerProjHitEnemy(clownEnemy);
+        }
+        else {
+          clownEnemy.characterArray.splice(clownEnemy.characterArray.indexOf(enemy), 1);
+        }
+      }
+
       if (clownEnemy.alive){
         clownEnemy.update();
         clownEnemy.display();
@@ -110,6 +133,7 @@ function createCharacters(){
         enemyProjHitPlayer(clownEnemy);
         playerProjHitEnemy(clownEnemy);
       }
+
 
       if (crazyClownEnemy.alive){
         crazyClownEnemy.update();
@@ -157,15 +181,18 @@ function mouseClicked(){
   }
 
   if (gameStart){
-    if (gameEnded){
-      gameStart = false;
-      birdShip.health = 3;
+    if (!gameEnded){
+      birdShip.fire();
     }
   }
 
   if (gameStart){
-    if (!gameEnded){
-      birdShip.fire();
+    if (gameEnded){
+      gameStart = false;
+      birdShip.health = 3;
+      clownEnemy.alive = true;
+      crazyClownEnemy.alive = true;
+      robotEnemy.alive = true;
     }
   }
 }
@@ -219,6 +246,7 @@ class Character{
     this.y = y;
     this.image = theImage;
     this.projectileArray = [];
+    this.characterArray = [];
   }
   
   display(){
