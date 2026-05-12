@@ -33,6 +33,10 @@ let backgroundX = 0;
 let gameStart = false;
 let gameEnded = true;
 
+let clownEnemies = [];
+let crazyClownEnemies = [];
+let robotEnemies = [];
+
 function preload(){
   redBirdImg = loadImage("redBird.png");
   parkBackgroundImg = loadImage("amusementparkbackground.png");
@@ -102,62 +106,53 @@ function createCharacters(){
       
 
       if (frameCount % 120 === 0){
-        let thatClownEnemy = new EnemyCharacter(clownEnemy.x, clownEnemy.y, clownImg, clownEnemy.dx, clownEnemy.dy);
-        clownEnemy.characterArray.push(thatClownEnemy);
+        clownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
       }
-      for (let enemy of clownEnemy.characterArray){
-        if (clownEnemy.alive){
-          clownEnemy.update();
-          clownEnemy.display();
+    
+      if (frameCount % 120 === 0){
+        crazyClownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
+      }
+
+      if (frameCount % 120 === 0){
+        robotEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
+      }
+
+      enemyFunctions(clownEnemies, "clown");
+      enemyFunctions(crazyClownEnemies, "crazyClown");
+      enemyFunctions(robotEnemies, "robot");
+    }
+  }
+}
+
+function enemyFunctions(enemyArray, enemyType){
+  for (let i = enemyArray.length - 1; i >= 0; i--){
+    let enemy = enemyArray[i];
+
+    if (enemy.alive){
+      enemy.update();
+      enemy.display()
+
+      if (frameCount % 60 === 0){
         
-          if (frameCount % 60 === 0){
-            clownEnemy.clownFire();
-          }
-
-          enemyProjHitPlayer(clownEnemy);
-          playerProjHitEnemy(clownEnemy);
+        if (enemyType === "clown"){
+          enemy.clownFire();
         }
-        else {
-          clownEnemy.characterArray.splice(clownEnemy.characterArray.indexOf(enemy), 1);
-        }
-      }
-
-      if (clownEnemy.alive){
-        clownEnemy.update();
-        clownEnemy.display();
         
-        if (frameCount % 60 === 0){
-          clownEnemy.clownFire();
+        if (enemyType === "crazyClown"){
+          enemy.crazyClownFire();
         }
 
-        enemyProjHitPlayer(clownEnemy);
-        playerProjHitEnemy(clownEnemy);
-      }
-
-
-      if (crazyClownEnemy.alive){
-        crazyClownEnemy.update();
-        crazyClownEnemy.display();
-        
-        if (frameCount % 60 === 0){
-          crazyClownEnemy.crazyClownFire();
+        if (enemyType === "robot"){
+          enemy.robotFire();
         }
-
-        enemyProjHitPlayer(crazyClownEnemy);
-        playerProjHitEnemy(crazyClownEnemy);
       }
 
-      if (robotEnemy.alive){
-        robotEnemy.update();
-        robotEnemy.display();
-        
-        if (frameCount % 60 === 0){
-          robotEnemy.robotFire();
-        }
+      enemyProjHitPlayer(enemy);
+      playerProjHitEnemy(enemy);
+    }
 
-        enemyProjHitPlayer(robotEnemy);
-        playerProjHitEnemy(robotEnemy);
-      }
+    else{
+      enemyArray.splice(i, 1);
     }
   }
 }
@@ -188,11 +183,18 @@ function mouseClicked(){
 
   if (gameStart){
     if (gameEnded){
+      
       gameStart = false;
+      
       birdShip.health = 3;
-      clownEnemy.alive = true;
-      crazyClownEnemy.alive = true;
-      robotEnemy.alive = true;
+      
+      clownEnemies = [];
+      crazyClownEnemies = [];
+      robotEnemies = [];
+
+      clownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
+      crazyClownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
+      robotEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
     }
   }
 }
@@ -246,7 +248,6 @@ class Character{
     this.y = y;
     this.image = theImage;
     this.projectileArray = [];
-    this.characterArray = [];
   }
   
   display(){
