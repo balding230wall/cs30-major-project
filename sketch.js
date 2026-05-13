@@ -37,6 +37,11 @@ let clownEnemies = [];
 let crazyClownEnemies = [];
 let robotEnemies = [];
 
+let totalEnemies = 0;
+let maxEnemiesAllowed = 9;
+let score = 0;
+let scoreToWin = 100;
+
 function preload(){
   redBirdImg = loadImage("redBird.png");
   parkBackgroundImg = loadImage("amusementparkbackground.png");
@@ -69,58 +74,60 @@ function draw() {
   createBackground();
   createCharacters();
   createHearts();
+  displayScore();
   endGame();
 }
 
 function createMainMenu(){
-  if (!gameStart){
-    if (gameEnded){
-      image(mainMenuImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
-    }
+  if (!gameStart && gameEnded){
+    image(mainMenuImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
   }
 }
 
 function createBackground() {
-  if (gameStart){
-    if (!gameEnded){
-      image(flippedBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
-      image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
+  if (gameStart && !gameEnded){
+    image(flippedBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+    image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
 
-      if (backgroundX <= windowWidth * -1){
-        backgroundX = 0;
-      }
-
-      backgroundX -= 2;
+    if (backgroundX <= windowWidth * -1){
+      backgroundX = 0;
     }
+
+    backgroundX -= 2;
   }
 }
 
 function createCharacters(){
-  if (gameStart){
-    if (!gameEnded){
+  if (gameStart && !gameEnded){
       
-      if (birdShip.health > 0){
-        birdShip.update();
-        birdShip.display();
-      }
-      
-
-      if (frameCount % 120 === 0){
-        clownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
-      }
-    
-      if (frameCount % 120 === 0){
-        crazyClownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
-      }
-
-      if (frameCount % 120 === 0){
-        robotEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
-      }
-
-      enemyFunctions(clownEnemies, "clown");
-      enemyFunctions(crazyClownEnemies, "crazyClown");
-      enemyFunctions(robotEnemies, "robot");
+    if (birdShip.health > 0){
+      birdShip.update();
+      birdShip.display();
     }
+    
+    if (totalEnemies <= maxEnemiesAllowed){
+      if (score < scoreToWin){
+        if (frameCount % 120 === 0){
+          clownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
+          totalEnemies += 1;
+        }
+      
+        if (frameCount % 120 === 0){
+          crazyClownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
+          totalEnemies += 1;
+        }
+
+        if (frameCount % 120 === 0){
+          robotEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
+          totalEnemies += 1;
+        }
+      }
+    }
+
+    enemyFunctions(clownEnemies, "clown");
+    enemyFunctions(crazyClownEnemies, "crazyClown");
+    enemyFunctions(robotEnemies, "robot");
+  
   }
 }
 
@@ -130,7 +137,7 @@ function enemyFunctions(enemyArray, enemyType){
 
     if (enemy.alive){
       enemy.update();
-      enemy.display()
+      enemy.display();
 
       if (frameCount % 60 === 0){
         
@@ -153,49 +160,53 @@ function enemyFunctions(enemyArray, enemyType){
 
     else{
       enemyArray.splice(i, 1);
+      totalEnemies -= 1;
+      score += 1;
     }
   }
 }
 
 function createHearts(){
-  if (gameStart){
-    if (!gameEnded){
-      for (let i = 0; i < birdShip.health; i++){
-        image(heartImg, (heartImg.width/2 + i * heartImg.width) * heartScale, heartImg.height/2 * heartScale, heartImg.width * heartScale, heartImg.height * heartScale);
-      }
+  if (gameStart && !gameEnded){
+    for (let i = 0; i < birdShip.health; i++){
+      image(heartImg, (heartImg.width/2 + i * heartImg.width) * heartScale, heartImg.height/2 * heartScale, heartImg.width * heartScale, heartImg.height * heartScale);
     }
   }
 }
 
+function displayScore(){
+  if (gameStart && !gameEnded){
+    textSize(25);
+    text("Score: " + score, heartImg.width/4 * heartScale, heartImg.height * heartScale * 1.25);
+  }
+}
+
 function mouseClicked(){
-  if (!gameStart){
-    if (gameEnded){
-      gameStart = true;
-      gameEnded = false;
-    }
+  if (!gameStart && gameEnded){
+    gameStart = true;
+    gameEnded = false;
   }
 
-  if (gameStart){
-    if (!gameEnded){
-      birdShip.fire();
-    }
+  if (gameStart && !gameEnded){
+    birdShip.fire();
   }
 
-  if (gameStart){
-    if (gameEnded){
+  if (gameStart && gameEnded){
       
-      gameStart = false;
-      
-      birdShip.health = 3;
-      
-      clownEnemies = [];
-      crazyClownEnemies = [];
-      robotEnemies = [];
+    gameStart = false;
+    
+    birdShip.health = 3;
+    totalEnemies = 0;
+    score = 0;
+    
+    clownEnemies = [];
+    crazyClownEnemies = [];
+    robotEnemies = [];
 
-      clownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
-      crazyClownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
-      robotEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
-    }
+    clownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
+    crazyClownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
+    robotEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
+    totalEnemies += 3;
   }
 }
 
@@ -353,3 +364,4 @@ class EnemyProjectile extends Projectiles{
     super(x, y, dx, dy, theImage);
   }
 }
+
