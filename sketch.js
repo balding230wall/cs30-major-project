@@ -18,15 +18,18 @@ let crazyClownProjectileImg;
 let mainMenuImg;
 let lossScreenImg;
 let heartImg;
+let amusementBossImg;
 
 let birdShip;
 let clownEnemy;
 let crazyClownEnemy;
 let robotEnemy;
+let boss;
 
 let characterScale = 0.2;
 let projectileScale = 0.1;
 let heartScale = 0.05;
+let bossScale = 1.5;
 
 let backgroundX = 0;
 
@@ -40,7 +43,7 @@ let robotEnemies = [];
 let totalEnemies = 0;
 let maxEnemiesAllowed = 9;
 let score = 0;
-let scoreToWin = 100;
+let scoreToWin = 5;
 
 function preload(){
   redBirdImg = loadImage("redBird.png");
@@ -56,6 +59,7 @@ function preload(){
   mainMenuImg = loadImage("mainmenu.png");
   lossScreenImg = loadImage("lossscreen.png");
   heartImg = loadImage("heart.png");
+  amusementBossImg = loadImage("amusementboss.png");
 }
 
 
@@ -66,6 +70,7 @@ function setup() {
   clownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg);
   crazyClownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg);
   robotEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg);
+  boss = new Boss(windowWidth, windowHeight, amusementBossImg);
 }
 
 function draw() {
@@ -92,8 +97,9 @@ function createBackground() {
     if (backgroundX <= windowWidth * -1){
       backgroundX = 0;
     }
-
-    backgroundX -= 2;
+    if (score < scoreToWin){
+      backgroundX -= 2;
+    }
   }
 }
 
@@ -104,9 +110,9 @@ function createCharacters(){
       birdShip.update();
       birdShip.display();
     }
-    
-    if (totalEnemies <= maxEnemiesAllowed){
-      if (score < scoreToWin){
+    if (score < scoreToWin){
+      if (totalEnemies <= maxEnemiesAllowed){
+
         if (frameCount % 120 === 0){
           clownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
           totalEnemies += 1;
@@ -122,6 +128,9 @@ function createCharacters(){
           totalEnemies += 1;
         }
       }
+    }
+    else{
+      boss.display();
     }
 
     enemyFunctions(clownEnemies, "clown");
@@ -328,6 +337,17 @@ class EnemyCharacter extends Character{
   robotFire(){
     let oneMoreEnemyProjectile = new EnemyProjectile(this.x - this.image.width * characterScale * 0.5, this.y, -10, 0, rocketProjectileImg);
     this.projectileArray.push(oneMoreEnemyProjectile);
+  }
+}
+
+class Boss extends Character{
+  constructor(x, y, theImage){
+    super(x, y, theImage);
+  }
+
+  display(){
+    image(amusementBossImg, windowWidth - amusementBossImg.width/2 * bossScale, windowHeight - amusementBossImg.height/2 * bossScale, amusementBossImg.width * bossScale, amusementBossImg.height * bossScale);
+
   }
 }
 
