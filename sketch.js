@@ -130,6 +130,9 @@ function createCharacters(){
       }
     }
     else{
+      clownEnemies = [];
+      crazyClownEnemies = [];
+      robotEnemies = [];
       boss.display();
     }
 
@@ -207,10 +210,6 @@ function mouseClicked(){
     birdShip.health = 3;
     totalEnemies = 0;
     score = 0;
-    
-    clownEnemies = [];
-    crazyClownEnemies = [];
-    robotEnemies = [];
 
     clownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
     crazyClownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
