@@ -19,6 +19,7 @@ let mainMenuImg;
 let lossScreenImg;
 let heartImg;
 let amusementBossImg;
+let bossProjectileImg;
 
 let birdShip;
 let clownEnemy;
@@ -60,6 +61,7 @@ function preload(){
   lossScreenImg = loadImage("lossscreen.png");
   heartImg = loadImage("heart.png");
   amusementBossImg = loadImage("amusementboss.png");
+  bossProjectileImg = loadImage("amusementboss.png");
 }
 
 
@@ -133,7 +135,8 @@ function createCharacters(){
       clownEnemies = [];
       crazyClownEnemies = [];
       robotEnemies = [];
-      boss.display();
+
+      bossFunctions();
     }
 
     enemyFunctions(clownEnemies, "clown");
@@ -176,6 +179,18 @@ function enemyFunctions(enemyArray, enemyType){
       score += 1;
     }
   }
+}
+
+function bossFunctions(){
+  if (boss.health > 0){
+    boss.display();
+  }
+  if (frameCount % 60 === 0){
+    boss.bossFire();
+  }
+
+  enemyProjHitPlayer(boss);
+  playerProjHitBoss(boss);
 }
 
 function createHearts(){
@@ -234,6 +249,23 @@ function isColliding(character, projectile){
   return isOverlappingX && isOverlappingY;
 }
 
+function isColliding2(boss, projectile){
+  let bossWidth = boss.image.width * bossScale;
+  let bossHeight = boss.image.height * bossScale;
+
+  let projectileWidth = projectile.image.width * projectileScale;
+  let projectileHeight = projectile.image.height * projectileScale;
+
+  let xDistance = abs(boss.x - projectile.x);
+  let yDistance = abs(boss.y - projectile.y);
+
+  
+  let isOverlappingX = xDistance < bossWidth/2 + projectileWidth/2;
+  let isOverlappingY = yDistance < bossHeight/2 + projectileHeight/2;
+
+  return isOverlappingX && isOverlappingY;
+}
+
 function enemyProjHitPlayer(enemy){
   for (let i = enemy.projectileArray.length - 1; i >= 0; i--){
     let projectile = enemy.projectileArray[i];
@@ -253,6 +285,17 @@ function playerProjHitEnemy(enemy){
     }
   }
 }
+
+function playerProjHitBoss(enemy){
+  for (let i = birdShip.projectileArray.length - 1; i >= 0; i--){
+    let projectile = birdShip.projectileArray[i];
+    if (isColliding2(enemy, projectile)){
+      birdShip.projectileArray.splice(i, 1);
+      boss.health --;
+    }
+  }
+}
+
 
 function endGame(){
   if (birdShip.health <= 0){
@@ -342,11 +385,17 @@ class EnemyCharacter extends Character{
 class Boss extends Character{
   constructor(x, y, theImage){
     super(x, y, theImage);
+
+    this.health = 50;
   }
 
   display(){
     image(amusementBossImg, windowWidth - amusementBossImg.width/2 * bossScale, windowHeight - amusementBossImg.height/2 * bossScale, amusementBossImg.width * bossScale, amusementBossImg.height * bossScale);
+  }
 
+  bossFire(){
+    let bossEnemyProjectile = new EnemyProjectile(this.x - this.image.width * bossScale * 0.5, this.y, -10, 0, bossProjectileImg);
+    this.projectileArray.push(bossEnemyProjectile);
   }
 }
 
@@ -379,6 +428,12 @@ class FriendlyProjectile extends Projectiles{
 }
 
 class EnemyProjectile extends Projectiles{
+  constructor(x, y, dx, dy, theImage){
+    super(x, y, dx, dy, theImage);
+  }
+}
+
+class BossProjectiles extends Projectiles{
   constructor(x, y, dx, dy, theImage){
     super(x, y, dx, dy, theImage);
   }
