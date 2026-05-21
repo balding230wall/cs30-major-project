@@ -6,8 +6,6 @@
 // - describe what you did to take this project "above and beyond"
 
 let redBirdImg;
-let parkBackgroundImg;
-let flippedBackgroundImg;
 let clownImg;
 let crazyClownImg;
 let amusementRobotImg;
@@ -20,6 +18,8 @@ let lossScreenImg;
 let heartImg;
 let amusementBossImg;
 let bossProjectileImg;
+let background1Img;
+let background2Img;
 
 let birdShip;
 let clownEnemy;
@@ -48,8 +48,6 @@ let scoreToWin = 5;
 
 function preload(){
   redBirdImg = loadImage("redBird.png");
-  parkBackgroundImg = loadImage("amusementparkbackground.png");
-  flippedBackgroundImg = loadImage("flippedbackgroundimage.png");
   clownImg = loadImage("amusementclown.png");
   crazyClownImg = loadImage("amusementcrazyclown.png");
   amusementRobotImg = loadImage("amusementrobot.png");
@@ -62,6 +60,8 @@ function preload(){
   heartImg = loadImage("heart.png");
   amusementBossImg = loadImage("amusementboss.png");
   bossProjectileImg = loadImage("amusementboss.png");
+  background1Img = loadImage("background1.png");
+  background2Img = loadImage("background2.png");
 }
 
 
@@ -93,8 +93,8 @@ function createMainMenu(){
 
 function createBackground() {
   if (gameStart && !gameEnded){
-    image(flippedBackgroundImg, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
-    image(parkBackgroundImg, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
+    image(background2Img, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+    image(background2Img, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
 
     if (backgroundX <= windowWidth * -1){
       backgroundX = 0;
