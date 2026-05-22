@@ -226,6 +226,10 @@ function mouseClicked(){
     totalEnemies = 0;
     score = 0;
 
+    clownEnemies = [];
+    crazyClownEnemies = [];
+    robotEnemies = [];
+
     clownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
     crazyClownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
     robotEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
