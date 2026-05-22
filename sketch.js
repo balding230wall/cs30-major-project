@@ -36,6 +36,7 @@ let backgroundX = 0;
 
 let gameStart = false;
 let gameEnded = true;
+let gameWon = false;
 
 let clownEnemies = [];
 let crazyClownEnemies = [];
@@ -59,7 +60,7 @@ function preload(){
   lossScreenImg = loadImage("lossscreen.png");
   heartImg = loadImage("heart.png");
   amusementBossImg = loadImage("amusementboss.png");
-  bossProjectileImg = loadImage("amusementboss.png");
+  bossProjectileImg = loadImage("bossprojectile.png");
   background1Img = loadImage("background1.png");
   background2Img = loadImage("background2.png");
 }
@@ -72,7 +73,7 @@ function setup() {
   clownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg);
   crazyClownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg);
   robotEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg);
-  boss = new Boss(windowWidth, windowHeight, amusementBossImg);
+  boss = new Boss(windowWidth - amusementBossImg.width/2 * bossScale, windowHeight - amusementBossImg.height/2 * bossScale, amusementBossImg);
 }
 
 function draw() {
@@ -229,11 +230,6 @@ function mouseClicked(){
     clownEnemies = [];
     crazyClownEnemies = [];
     robotEnemies = [];
-
-    clownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
-    crazyClownEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
-    robotEnemies.push(new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
-    totalEnemies += 3;
   }
 }
 
@@ -305,6 +301,12 @@ function endGame(){
   if (birdShip.health <= 0){
     gameEnded = true;
     image(lossScreenImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+  }
+
+  if (boss.health <= 0){
+    gameEnded = true;
+    gameWon = true;
+    
   }
 }
 
@@ -394,7 +396,17 @@ class Boss extends Character{
   }
 
   display(){
-    image(amusementBossImg, windowWidth - amusementBossImg.width/2 * bossScale, windowHeight - amusementBossImg.height/2 * bossScale, amusementBossImg.width * bossScale, amusementBossImg.height * bossScale);
+    image(this.image, this.x, this.y, amusementBossImg.width * bossScale, amusementBossImg.height * bossScale);
+  
+    for (let projectile of this.projectileArray){
+      if (projectile.isOnScreen()){
+        projectile.update();
+        projectile.display();
+      }
+      else{
+        this.projectileArray.splice(this.projectileArray.indexOf(projectile), 1);
+      }
+    }
   }
 
   bossFire(){
