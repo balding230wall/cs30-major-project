@@ -20,6 +20,7 @@ let amusementBossImg;
 let bossProjectileImg;
 let background1Img;
 let background2Img;
+let winScreenImg;
 
 let birdShip;
 let clownEnemy;
@@ -63,6 +64,7 @@ function preload(){
   bossProjectileImg = loadImage("bossprojectile.png");
   background1Img = loadImage("background1.png");
   background2Img = loadImage("background2.png");
+  winScreenImg = loadImage("winscreen.jpeg");
 }
 
 
@@ -222,6 +224,10 @@ function mouseClicked(){
   if (gameStart && gameEnded){
       
     gameStart = false;
+
+    if (gameWon){
+      gameWon = false;
+    }
     
     birdShip.health = 3;
     totalEnemies = 0;
@@ -306,7 +312,7 @@ function endGame(){
   if (boss.health <= 0){
     gameEnded = true;
     gameWon = true;
-    
+    image(winScreenImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
   }
 }
 
@@ -433,7 +439,7 @@ class Projectiles{
   }
 
   isOnScreen(){
-    return this.x > 0 && this.x < windowWidth;
+    return this.x > 0 && this.x < windowWidth && this.y > 0 && this.y < windowHeight;
   }
 }
 
@@ -451,7 +457,15 @@ class EnemyProjectile extends Projectiles{
 
 class BossProjectiles extends Projectiles{
   constructor(x, y, dx, dy, theImage){
-    super(x, y, dx, dy, theImage);
+    super(x, y, theImage);
+
+    this.dx = random(-10, -1);
+    this.dy = random(10, 10);
+  }
+    
+  update(){
+    this.x += this.dx;
+    this.y += this.dy;
   }
 }
 
