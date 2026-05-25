@@ -86,10 +86,11 @@ function draw() {
   createHearts();
   displayScore();
   endGame();
+  displayBossHealth();
 }
 
 function createMainMenu(){
-  if (!gameStart && gameEnded){
+  if (!gameStart && gameEnded && !gameWon){
     image(mainMenuImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
   }
 }
@@ -186,14 +187,19 @@ function enemyFunctions(enemyArray, enemyType){
 
 function bossFunctions(){
   if (boss.health > 0){
+    boss.update();
     boss.display();
   }
-  if (frameCount % 60 === 0){
-    boss.bossFire();
+  
+  if (boss.enteredScreen){
+    if (frameCount % 60 === 0){
+      boss.bossFire();
+    }
+    enemyProjHitPlayer(boss);
+    playerProjHitBoss(boss);
   }
 
-  enemyProjHitPlayer(boss);
-  playerProjHitBoss(boss);
+  displayBossHealth();
 }
 
 function createHearts(){
@@ -208,6 +214,20 @@ function displayScore(){
   if (gameStart && !gameEnded){
     textSize(25);
     text("Score: " + score, heartImg.width/4 * heartScale, heartImg.height * heartScale * 1.25);
+  }
+}
+
+function displayBossHealth(){
+  if (score >= scoreToWin && boss.health > 0){
+    textSize(25);
+    text("Boss Health: " + boss.health, windowWidth - 200, 50);
+
+    rect(windowWidth/3 * 2, 70, windowWidth, 20);
+
+    push();
+    fill("red");
+    rect(windowWidth/3 * 2, 70, boss.health * (windowWidth/150), 20);
+    pop();
   }
 }
 
@@ -232,6 +252,9 @@ function mouseClicked(){
     birdShip.health = 3;
     totalEnemies = 0;
     score = 0;
+    boss.health = 50;
+    boss.x = windowWidth + boss.image.width;
+    boss.enteredScreen = false;
 
     clownEnemies = [];
     crazyClownEnemies = [];
@@ -399,6 +422,27 @@ class Boss extends Character{
     super(x, y, theImage);
 
     this.health = 50;
+
+    this.x = windowWidth + this.image.width;
+
+    this.targetXPosition = windowWidth - this.image.width/2 * bossScale;
+    this.targetYPosition = windowHeight - amusementBossImg.height/2 * bossScale;
+
+    this.y = this.targetYPosition;
+
+    this.enteredScreen = false;
+  }
+
+  update(){
+    if (!this.enteredScreen){
+      this.x -= 3;
+      backgroundX -= 3;
+
+      if (this.x <= this.targetXPosition){
+        this.x = this.targetXPosition;
+        this.enteredScreen = true;
+      }
+    }
   }
 
   display(){
@@ -457,7 +501,7 @@ class EnemyProjectile extends Projectiles{
 
 class BossProjectiles extends Projectiles{
   constructor(x, y, dx, dy, theImage){
-    super(x, y, theImage);
+    super(x, y, dx, dy, theImage);
 
     this.dx = random(-10, -1);
     this.dy = random(10, 10);
