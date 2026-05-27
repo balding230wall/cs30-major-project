@@ -57,8 +57,8 @@ function preload(){
   rocketProjectileImg = loadImage("rocketprojectile.png");
   clownProjectileImg = loadImage("clownprojectile.png");
   crazyClownProjectileImg = loadImage("crazyclownprojectile.png");
-  mainMenuImg = loadImage("mainmenu.png");
-  lossScreenImg = loadImage("lossscreen.png");
+  mainMenuImg = loadImage("mainmenu.jpeg");
+  lossScreenImg = loadImage("lossscreen.jpeg");
   heartImg = loadImage("heart.png");
   amusementBossImg = loadImage("amusementboss.png");
   bossProjectileImg = loadImage("bossprojectile.png");
@@ -86,7 +86,6 @@ function draw() {
   createHearts();
   displayScore();
   endGame();
-  displayBossHealth();
 }
 
 function createMainMenu(){
@@ -502,14 +501,14 @@ class EnemyProjectile extends Projectiles{
 class BossProjectiles extends Projectiles{
   constructor(x, y, dx, dy, theImage){
     super(x, y, dx, dy, theImage);
-
-    this.dx = random(-10, -1);
-    this.dy = random(10, 10);
   }
     
   update(){
-    this.x += this.dx;
-    this.y += this.dy;
+    push();
+   
+    rotate(random(-180, 180));
+
+    pop();
   }
 }
 
