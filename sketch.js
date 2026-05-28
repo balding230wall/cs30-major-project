@@ -504,11 +504,7 @@ class BossProjectiles extends Projectiles{
   }
     
   update(){
-    push();
-   
-    rotate(random(-180, 180));
 
-    pop();
   }
 }
 
