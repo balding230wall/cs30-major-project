@@ -22,6 +22,12 @@ let background1Img;
 let background2Img;
 let winScreenImg;
 
+let mainProjectileSound;
+let basicEnemiesHitSound;
+let birdHitSound;
+let bossHitSound;
+let bossDefeatedSound;
+
 let birdShip;
 let clownEnemy;
 let crazyClownEnemy;
@@ -65,6 +71,12 @@ function preload(){
   background1Img = loadImage("background1.png");
   background2Img = loadImage("background2.png");
   winScreenImg = loadImage("winscreen.jpeg");
+
+  mainProjectileSound = loadSound("mainprojectilesound.flac");
+  basicEnemiesHitSound = loadSound("basicenemieshitsound.wav");
+  birdHitSound = loadSound("birdhitsound.mp3");
+  bossHitSound = loadSound("bossHitSound.flac");
+  bossDefeatedSound = loadSound("bossdefeatsound.mp3");
 }
 
 
@@ -238,6 +250,7 @@ function mouseClicked(){
 
   if (gameStart && !gameEnded){
     birdShip.fire();
+    mainProjectileSound.play();
   }
 
   if (gameStart && gameEnded){
@@ -300,6 +313,7 @@ function enemyProjHitPlayer(enemy){
     if (isColliding(birdShip, projectile)){
       enemy.projectileArray.splice(i, 1);
       birdShip.health --;
+      birdHitSound.play();
     }
   }
 }
@@ -310,6 +324,7 @@ function playerProjHitEnemy(enemy){
     if (isColliding(enemy, projectile)){
       birdShip.projectileArray.splice(i, 1);
       enemy.alive = false;
+      basicEnemiesHitSound.play();
     }
   }
 }
@@ -320,6 +335,7 @@ function playerProjHitBoss(enemy){
     if (isColliding2(enemy, projectile)){
       birdShip.projectileArray.splice(i, 1);
       boss.health --;
+      bossHitSound.play();
     }
   }
 }
@@ -332,6 +348,7 @@ function endGame(){
   }
 
   if (boss.health <= 0){
+    bossDefeatedSound.play();
     gameEnded = true;
     gameWon = true;
     image(winScreenImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
