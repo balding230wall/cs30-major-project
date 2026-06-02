@@ -28,6 +28,10 @@ let birdHitSound;
 let bossHitSound;
 let bossDefeatedSound;
 
+let mainMusic;
+let bossFightMusic;
+let mainMenuMusic;
+
 let birdShip;
 let clownEnemy;
 let crazyClownEnemy;
@@ -77,6 +81,10 @@ function preload(){
   birdHitSound = loadSound("birdhitsound.mp3");
   bossHitSound = loadSound("bossHitSound.flac");
   bossDefeatedSound = loadSound("bossdefeatsound.mp3");
+
+  mainMusic = loadSound("mainmusic.mp3");
+  bossFightMusic = loadSound("bossfightmusic.mp3");
+  mainMenuMusic = loadSound("mainmenumusic.mp3");
 }
 
 
@@ -94,6 +102,7 @@ function draw() {
   background(220);
   createMainMenu();
   createBackground();
+  playMusic();
   createCharacters();
   createHearts();
   displayScore();
@@ -271,6 +280,25 @@ function mouseClicked(){
     clownEnemies = [];
     crazyClownEnemies = [];
     robotEnemies = [];
+  }
+}
+
+function playMusic(){
+  if (!gameStart && gameEnded){
+    if (!mainMenuMusic.isPlaying()){
+      mainMenuMusic.play();
+    }
+  }
+
+  if (gameStart && !gameEnded){
+    if (!mainMusic.isPlaying() && score < scoreToWin){
+      mainMenuMusic.stop();
+      mainMusic.play();
+    }
+    if (!bossFightMusic.isPlaying() && score >= scoreToWin){
+      mainMusic.stop();
+      bossFightMusic.play();
+    }
   }
 }
 
