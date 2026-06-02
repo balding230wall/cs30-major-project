@@ -79,7 +79,7 @@ function preload(){
   mainProjectileSound = loadSound("mainprojectilesound.flac");
   basicEnemiesHitSound = loadSound("basicenemieshitsound.wav");
   birdHitSound = loadSound("birdhitsound.mp3");
-  bossHitSound = loadSound("bossHitSound.flac");
+  bossHitSound = loadSound("bosshitsound.flac");
   bossDefeatedSound = loadSound("bossdefeatsound.mp3");
 
   mainMusic = loadSound("mainmusic.mp3");
