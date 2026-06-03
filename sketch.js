@@ -27,6 +27,8 @@ let basicEnemiesHitSound;
 let birdHitSound;
 let bossHitSound;
 let bossDefeatedSound;
+let victorySound;
+let defeatSound;
 
 let mainMusic;
 let bossFightMusic;
@@ -44,6 +46,8 @@ let heartScale = 0.05;
 let bossScale = 1.5;
 
 let backgroundX = 0;
+let currentBackground = background2Img;
+  
 
 let gameStart = false;
 let gameEnded = true;
@@ -81,6 +85,8 @@ function preload(){
   birdHitSound = loadSound("birdhitsound.mp3");
   bossHitSound = loadSound("bosshitsound.flac");
   bossDefeatedSound = loadSound("bossdefeatsound.mp3");
+  victorySound = loadSound("victorysound.mp3");
+  defeatSound = loadSound("defeatsound.mp3");
 
   mainMusic = loadSound("mainmusic.mp3");
   bossFightMusic = loadSound("bossfightmusic.mp3");
@@ -117,8 +123,8 @@ function createMainMenu(){
 
 function createBackground() {
   if (gameStart && !gameEnded){
-    image(background2Img, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
-    image(background2Img, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
+    image(currentBackground, backgroundX + windowWidth/2, windowHeight/2, windowWidth, windowHeight);
+    image(currentBackground, backgroundX + windowWidth/2 + windowWidth, windowHeight/2, windowWidth, windowHeight);
 
     if (backgroundX <= windowWidth * -1){
       backgroundX = 0;
@@ -178,16 +184,19 @@ function enemyFunctions(enemyArray, enemyType){
       enemy.update();
       enemy.display();
 
-      if (frameCount % 60 === 0){
-        
+      if (frameCount % 120 === 0){
         if (enemyType === "clown"){
           enemy.clownFire();
         }
-        
+      }
+
+      if (frameCount % 60 === 0){
         if (enemyType === "crazyClown"){
           enemy.crazyClownFire();
         }
+      }
 
+      if (frameCount % 180 === 0){
         if (enemyType === "robot"){
           enemy.robotFire();
         }
@@ -251,6 +260,17 @@ function displayBossHealth(){
   }
 }
 
+function keyPressed(){
+  if (key === "b"){
+    if (currentBackground === background2Img){
+      currentBackground = background1Img;
+    }
+    else if (currentBackground === background1Img){
+      currentBackground = background2Img;
+    }
+  }
+}
+
 function mouseClicked(){
   if (!gameStart && gameEnded){
     gameStart = true;
@@ -262,7 +282,7 @@ function mouseClicked(){
     mainProjectileSound.play();
   }
 
-  if (gameStart && gameEnded){
+  if (gameStart && gameEnded && !victorySound.isPlaying && !defeatSound.isPlaying){
       
     gameStart = false;
 
@@ -298,6 +318,22 @@ function playMusic(){
     if (!bossFightMusic.isPlaying() && score >= scoreToWin){
       mainMusic.stop();
       bossFightMusic.play();
+    }
+  }
+
+  if (gameStart && gameEnded && gameWon){
+    if (!victorySound.isPlaying() && !victorySound.hasPlayed()){
+      mainMusic.stop();
+      bossFightMusic.stop();
+      victorySound.play();
+    }
+  }
+  
+  if (gameStart && gameEnded && !gameWon){
+    if (!defeatSound.isPlaying() && !defeatSound.hasPlayed()){
+      mainMusic.stop();
+      bossFightMusic.stop();
+      defeatSound.play();
     }
   }
 }
