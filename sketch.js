@@ -46,12 +46,17 @@ let heartScale = 0.05;
 let bossScale = 1.5;
 
 let backgroundX = 0;
-let currentBackground = background2Img;
+let currentBackground;
   
 
 let gameStart = false;
 let gameEnded = true;
 let gameWon = false;
+
+let victorySoundPlayed = false;
+let defeatSoundPlayed = false;
+let bossDefeatSoundPlayed = false;
+let startMusic = false;
 
 let clownEnemies = [];
 let crazyClownEnemies = [];
@@ -97,6 +102,9 @@ function preload(){
 function setup() {
   createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
+
+  currentBackground = background2Img;
+
   birdShip = new FriendlyCharacter(200, 200, redBirdImg);
   clownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg);
   crazyClownEnemy = new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg);
@@ -221,7 +229,7 @@ function bossFunctions(){
   }
   
   if (boss.enteredScreen){
-    if (frameCount % 60 === 0){
+    if (frameCount % 12 === 0){
       boss.bossFire();
     }
     enemyProjHitPlayer(boss);
@@ -272,17 +280,24 @@ function keyPressed(){
 }
 
 function mouseClicked(){
-  if (!gameStart && gameEnded){
+  userStartAudio();
+
+  if (!gameStart && gameEnded && !startMusic){
+    startMusic = true;
+    return;
+  }
+
+   if (!gameStart && gameEnded && startMusic){
     gameStart = true;
     gameEnded = false;
-  }
+   }
 
   if (gameStart && !gameEnded){
     birdShip.fire();
     mainProjectileSound.play();
   }
 
-  if (gameStart && gameEnded && !victorySound.isPlaying && !defeatSound.isPlaying){
+  if (gameStart && gameEnded && !victorySound.isPlaying() && !defeatSound.isPlaying()){
       
     gameStart = false;
 
@@ -296,6 +311,9 @@ function mouseClicked(){
     boss.health = 50;
     boss.x = windowWidth + boss.image.width;
     boss.enteredScreen = false;
+    victorySoundPlayed = false;
+    defeatSoundPlayed = false;
+    bossDefeatSoundPlayed = false;
 
     clownEnemies = [];
     crazyClownEnemies = [];
@@ -306,34 +324,36 @@ function mouseClicked(){
 function playMusic(){
   if (!gameStart && gameEnded){
     if (!mainMenuMusic.isPlaying()){
-      mainMenuMusic.play();
+      mainMenuMusic.loop();
     }
   }
 
   if (gameStart && !gameEnded){
+    mainMenuMusic.stop();
     if (!mainMusic.isPlaying() && score < scoreToWin){
-      mainMenuMusic.stop();
-      mainMusic.play();
+      mainMusic.loop();
     }
     if (!bossFightMusic.isPlaying() && score >= scoreToWin){
       mainMusic.stop();
-      bossFightMusic.play();
+      bossFightMusic.loop();
     }
   }
 
   if (gameStart && gameEnded && gameWon){
-    if (!victorySound.isPlaying() && !victorySound.hasPlayed()){
+    if (!victorySoundPlayed){
       mainMusic.stop();
       bossFightMusic.stop();
       victorySound.play();
+      victorySoundPlayed = true;
     }
   }
   
   if (gameStart && gameEnded && !gameWon){
-    if (!defeatSound.isPlaying() && !defeatSound.hasPlayed()){
+    if (!defeatSoundPlayed){
       mainMusic.stop();
       bossFightMusic.stop();
       defeatSound.play();
+      defeatSoundPlayed = true;
     }
   }
 }
@@ -412,7 +432,10 @@ function endGame(){
   }
 
   if (boss.health <= 0){
-    bossDefeatedSound.play();
+    if (!bossDefeatSoundPlayed){
+      bossDefeatedSound.play();
+      bossDefeatSoundPlayed = true;
+    }
     gameEnded = true;
     gameWon = true;
     image(winScreenImg, windowWidth/2, windowHeight/2, windowWidth, windowHeight);
@@ -540,7 +563,10 @@ class Boss extends Character{
   }
 
   bossFire(){
-    let bossEnemyProjectile = new EnemyProjectile(this.x - this.image.width * bossScale * 0.5, this.y, -10, 0, bossProjectileImg);
+    let randomDx = random(-12, -8);
+    let randomDy = random(-6, 6);
+
+    let bossEnemyProjectile = new EnemyProjectile(this.x - this.image.width * bossScale * 0.5, this.y, randomDx, randomDy, bossProjectileImg);
     this.projectileArray.push(bossEnemyProjectile);
   }
 }
@@ -560,6 +586,7 @@ class Projectiles{
 
   update(){
     this.x += this.dx;
+    this.y += this.dy;
   }
 
   isOnScreen(){
@@ -582,10 +609,6 @@ class EnemyProjectile extends Projectiles{
 class BossProjectiles extends Projectiles{
   constructor(x, y, dx, dy, theImage){
     super(x, y, dx, dy, theImage);
-  }
-    
-  update(){
-
   }
 }
 
