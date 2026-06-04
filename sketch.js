@@ -1,9 +1,9 @@
 // Bird Fighter
 // Chuyan Wang
-// Date
+// June 12, 2026
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - Added background music and sound effects
 
 let redBirdImg;
 let clownImg;
@@ -57,6 +57,7 @@ let victorySoundPlayed = false;
 let defeatSoundPlayed = false;
 let bossDefeatSoundPlayed = false;
 let startMusic = false;
+let spawnBird = false;
 
 let clownEnemies = [];
 let crazyClownEnemies = [];
@@ -151,7 +152,7 @@ function createCharacters(){
       birdShip.display();
     }
     if (score < scoreToWin){
-      if (totalEnemies <= maxEnemiesAllowed){
+      if (totalEnemies < maxEnemiesAllowed){
 
         if (frameCount % 120 === 0){
           clownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
@@ -249,15 +250,21 @@ function createHearts(){
 
 function displayScore(){
   if (gameStart && !gameEnded){
+    push();
+    fill("purple");
     textSize(25);
     text("Score: " + score, heartImg.width/4 * heartScale, heartImg.height * heartScale * 1.25);
+    pop();
   }
 }
 
 function displayBossHealth(){
   if (score >= scoreToWin && boss.health > 0){
+    push();
+    fill("purple");
     textSize(25);
     text("Boss Health: " + boss.health, windowWidth - 200, 50);
+    pop();
 
     rect(windowWidth/3 * 2, 70, windowWidth, 20);
 
@@ -282,19 +289,27 @@ function keyPressed(){
 function mouseClicked(){
   userStartAudio();
 
-  if (!gameStart && gameEnded && !startMusic){
-    startMusic = true;
-    return;
+  if (!gameStart && gameEnded){
+    
+    if(!startMusic){
+      startMusic = true;
+      return;
+    }
+    else{
+      gameStart = true;
+      gameEnded = false;
+    }
   }
 
-   if (!gameStart && gameEnded && startMusic){
-    gameStart = true;
-    gameEnded = false;
-   }
-
   if (gameStart && !gameEnded){
-    birdShip.fire();
-    mainProjectileSound.play();
+    if (!spawnBird){
+      spawnBird = true;
+      return;
+    }
+    else{
+      birdShip.fire();
+      mainProjectileSound.play();
+    }
   }
 
   if (gameStart && gameEnded && !victorySound.isPlaying() && !defeatSound.isPlaying()){
@@ -314,10 +329,13 @@ function mouseClicked(){
     victorySoundPlayed = false;
     defeatSoundPlayed = false;
     bossDefeatSoundPlayed = false;
+    spawnBird = false;
 
     clownEnemies = [];
     crazyClownEnemies = [];
     robotEnemies = [];
+    birdShip.projectileArray = [];
+    boss.projectileArray = [];
   }
 }
 
