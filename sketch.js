@@ -75,7 +75,7 @@ let robotEnemies = [];
 let totalEnemies = 0;
 let maxEnemiesAllowed = 9;
 let score = 0;
-let scoreToWin = 50;
+let scoreToWin = 5;
 
 function preload(){
   //loading images
