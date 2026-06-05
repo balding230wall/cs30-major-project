@@ -75,7 +75,7 @@ let robotEnemies = [];
 let totalEnemies = 0;
 let maxEnemiesAllowed = 9;
 let score = 0;
-let scoreToWin = 5;
+let scoreToWin = 50;
 
 function preload(){
   //loading images
@@ -555,6 +555,7 @@ function endGame(){
 }
 
 class Character{
+  //creates the character class with x, y, image, and projectile array
   constructor(x, y, theImage){
     this.x = x;
     this.y = y;
@@ -563,13 +564,17 @@ class Character{
   }
   
   display(){
+    //displays the character
     image(this.image, this.x, this.y, this.image.width * characterScale, this.image.height * characterScale);
 
+    //iterating through the projectile array
     for (let projectile of this.projectileArray){
+      //if the projectile is on screen, update and display it
       if (projectile.isOnScreen()){
         projectile.update();
         projectile.display();
       }
+      //if not on screen, splice the projectile
       else {
         this.projectileArray.splice(this.projectileArray.indexOf(projectile), 1);
       }
@@ -578,36 +583,44 @@ class Character{
 }
 
 class FriendlyCharacter extends Character{
+  //create the friendly character sub class from the character class with x, y, image, and health
   constructor(x, y, theImage, health){
     super(x, y, theImage);
 
+    // sets the friendly character health to 3
     this.health = 3;
   }
 
   update(){
+    //have the friendly character follow the mouse
     this.x = mouseX;
     this.y = mouseY;
   }
 
   fire(){
+    //creates a new friendly projectile and push it into the projectile array
     let thatFriendlyProjectile = new FriendlyProjectile(this.x + this.image.width * characterScale * 0.5, this.y, 10, 0, mainProjectileImg);
     this.projectileArray.push(thatFriendlyProjectile);
   }
 }
 
 class EnemyCharacter extends Character{
+  //create the enemy character sub class from the character class with x, y, image, dx, and dy
   constructor(x, y, theImage, dx, dy){
     super(x, y, theImage);
 
+    //sets dx and dy to random, and sets the its status to alive
     this.dx = random(-10, -5);
     this.dy = random(-5, 5);
     this.alive = true;
   }
 
   update(){
+    //makes the enemy characters move
     this.x += this.dx;
     this.y += this.dy;
       
+    //have the enemy character change directions if it hits a boundary (top or bottom of the screen, right side or middle of the screen)
     if (this.x <= windowWidth/2 || this.x >= windowWidth){
       this.dx *= -1;
     }
@@ -617,42 +630,54 @@ class EnemyCharacter extends Character{
   }
 
   clownFire(){
+    //creates a new clown projectile and push it into the projectile array
     let thatEnemyProjectile = new EnemyProjectile(this.x - this.image.width * characterScale * 0.5, this.y, -10, 0, clownProjectileImg);
     this.projectileArray.push(thatEnemyProjectile);
   }
 
   crazyClownFire(){
+    //creates a new crazyclown projectile and push it into the projectile array
     let anotherEnemyProjectile = new EnemyProjectile(this.x - this.image.width * characterScale * 0.5, this.y, -10, 0, crazyClownProjectileImg);
     this.projectileArray.push(anotherEnemyProjectile);
   }
 
   robotFire(){
+    //creates a new robot projectile and push it into the projectile array
     let oneMoreEnemyProjectile = new EnemyProjectile(this.x - this.image.width * characterScale * 0.5, this.y, -10, 0, rocketProjectileImg);
     this.projectileArray.push(oneMoreEnemyProjectile);
   }
 }
 
 class Boss extends Character{
+//create the boss character sub class from the character class with x, y, and image
   constructor(x, y, theImage){
     super(x, y, theImage);
 
+    //sets boss health to 50
     this.health = 50;
 
+    //sets the boss's x position to be initially off screen
     this.x = windowWidth + this.image.width;
 
+    //sets the end position for where the boss should be when the boss animation is done
     this.targetXPosition = windowWidth - this.image.width/2 * bossScale;
-    this.targetYPosition = windowHeight - amusementBossImg.height/2 * bossScale;
+    this.targetYPosition = windowHeight - this.image.height/2 * bossScale;
 
+    //sets the boss's y position to be at the ideal end height
     this.y = this.targetYPosition;
 
+    //states that the boss's animation is not yet finished
     this.enteredScreen = false;
   }
 
   update(){
+    //if the boss's animation is not finished
     if (!this.enteredScreen){
+      //move the background and the boss to the left to create a scrolling effect
       this.x -= 3;
       backgroundX -= 3;
 
+      //if the boss reaches the ideal end position, end the animation
       if (this.x <= this.targetXPosition){
         this.x = this.targetXPosition;
         this.enteredScreen = true;
@@ -661,13 +686,17 @@ class Boss extends Character{
   }
 
   display(){
+    //display the boss
     image(this.image, this.x, this.y, amusementBossImg.width * bossScale, amusementBossImg.height * bossScale);
   
+    //iterating through the projectile array
     for (let projectile of this.projectileArray){
+      //if the projectile is on screen, update and display it
       if (projectile.isOnScreen()){
         projectile.update();
         projectile.display();
       }
+      //if not on screen, splice the projectile
       else{
         this.projectileArray.splice(this.projectileArray.indexOf(projectile), 1);
       }
@@ -675,15 +704,18 @@ class Boss extends Character{
   }
 
   bossFire(){
+    //sets the dx and dy to make the boss's projectiles fire in random directions
     let randomDx = random(-12, -8);
     let randomDy = random(-6, 6);
 
+    //create a new boss projectile and push it into the projectile array
     let bossEnemyProjectile = new EnemyProjectile(this.x - this.image.width * bossScale * 0.5, this.y, randomDx, randomDy, bossProjectileImg);
     this.projectileArray.push(bossEnemyProjectile);
   }
 }
 
 class Projectiles{
+  //create the projectiles class with x, y, dx, dy, and image
   constructor(x, y, dx, dy, theImage) {
     this.x = x;
     this.y = y;
@@ -693,32 +725,38 @@ class Projectiles{
   }
 
   display(){
+    //displays the projectiles
     image(this.image, this.x, this.y, this.image.width * projectileScale, this.image.height * projectileScale);
   }
 
   update(){
+    //moves the projectiles
     this.x += this.dx;
     this.y += this.dy;
   }
 
   isOnScreen(){
+    //checks if the projectile is still on screen
     return this.x > 0 && this.x < windowWidth && this.y > 0 && this.y < windowHeight;
   }
 }
 
 class FriendlyProjectile extends Projectiles{
+  //create the friendly projectile sub class from the projectile class with x, y, dx, dy, and image
   constructor(x, y, dx, dy, theImage){
     super(x, y, dx, dy, theImage);
   }
 }
 
 class EnemyProjectile extends Projectiles{
+  //create the enemy projectile sub class from the projectile class with x, y, dx, dy, and image
   constructor(x, y, dx, dy, theImage){
     super(x, y, dx, dy, theImage);
   }
 }
 
 class BossProjectiles extends Projectiles{
+  //create the boss projectile sub class from the projectile class with x, y, dx, dy, and image
   constructor(x, y, dx, dy, theImage){
     super(x, y, dx, dy, theImage);
   }
