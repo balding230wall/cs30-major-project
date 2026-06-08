@@ -9,3 +9,12 @@ Improve:
 - space to shoot
 - easy vs hard mode
 - brief moment of invulnerability when hit
+
+Doesn't Know Computer Science
+
+Good:
+- liked boss fight
+- music was good
+
+Improve:
+- too hard
