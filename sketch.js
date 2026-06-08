@@ -460,6 +460,7 @@ function mouseClicked(){
     defeatSoundPlayed = false;
     bossDefeatSoundPlayed = false;
     spawnBird = false;
+    gameMode = "easy";
 
     //empty out all arrays for next game
     clownEnemies = [];
