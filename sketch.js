@@ -73,9 +73,19 @@ let robotEnemies = [];
 
 //setting parameters that control enemy numbers and score to win
 let totalEnemies = 0;
-let maxEnemiesAllowed = 9;
+let maxEnemiesAllowed;
+let spawnRate;
 let score = 0;
-let scoreToWin = 15;
+let scoreToWin;
+
+//fire rates
+let bossFireRate;
+let clownFireRate;
+let crazyClownFireRate;
+let robotFireRate;
+
+// sets game mode
+let gameMode = "easy";
 
 function preload(){
   //loading images
@@ -129,6 +139,7 @@ function setup() {
 
 function draw() {
   background(220);
+  modeSettings();
   createMainMenu();
   createBackground();
   playMusic();
@@ -176,19 +187,19 @@ function createCharacters(){
       if (totalEnemies < maxEnemiesAllowed){
 
         //create a new clown enemy every 2 seconds and push it into the array
-        if (frameCount % 120 === 0){
+        if (frameCount % spawnRate === 0){
           clownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), clownImg));
           totalEnemies += 1;
         }
       
         //create a new crazyclown enemy every 2 seconds and push it into the array
-        if (frameCount % 120 === 0){
+        if (frameCount % spawnRate === 0){
           crazyClownEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), crazyClownImg));
           totalEnemies += 1;
         }
 
         //create a new robot enemy every 2 seconds and push it into the array
-        if (frameCount % 120 === 0){
+        if (frameCount % spawnRate === 0){
           robotEnemies.push (new EnemyCharacter(windowWidth, random(0, windowHeight), amusementRobotImg));
           totalEnemies += 1;
         }
@@ -223,21 +234,21 @@ function enemyFunctions(enemyArray, enemyType){
       enemy.display();
 
       //if the enemy is a clown, it fires every 2 seconds
-      if (frameCount % 120 === 0){
+      if (frameCount % clownFireRate === 0){
         if (enemyType === "clown"){
           enemy.clownFire();
         }
       }
 
       //if the enemy is a crazyclown, it fires every second
-      if (frameCount % 60 === 0){
+      if (frameCount % crazyClownFireRate === 0){
         if (enemyType === "crazyClown"){
           enemy.crazyClownFire();
         }
       }
 
       //if the enemy is a robot, it fires every 3 seconds
-      if (frameCount % 180 === 0){
+      if (frameCount % robotFireRate === 0){
         if (enemyType === "robot"){
           enemy.robotFire();
         }
@@ -266,7 +277,7 @@ function bossFunctions(){
   
   //if the boss is fully on screen and the boss fight has officially started, it fires 5 times a second
   if (boss.enteredScreen){
-    if (frameCount % 12 === 0){
+    if (frameCount % bossFireRate === 0){
       boss.bossFire();
     }
     //detect if a player has hit the boss or if the boss has hit the player
@@ -319,6 +330,46 @@ function displayBossHealth(){
   }
 }
 
+function modeSettings(){
+  //settings for easy mode
+  if (gameMode === "easy"){
+    //fire rates
+    bossFireRate = 12;
+    clownFireRate = 120;
+    crazyClownFireRate = 60;
+    robotFireRate = 180;
+
+    //score to trigger boss fight
+    scoreToWin = 20;
+
+    //max number of enemies allowed
+    maxEnemiesAllowed = 9;
+
+    //spawn rate
+    spawnRate = 120;
+
+  }
+
+  //settings for hard mode
+  if (gameMode === "hard"){
+    //fire rates
+    bossFireRate = 6;
+    clownFireRate = 60;
+    crazyClownFireRate = 30;
+    robotFireRate = 90;
+
+    //score to trigger boss fight
+    scoreToWin = 50;
+
+    //max number of enemies allowed
+    maxEnemiesAllowed = 15;
+
+    //spawn rate
+    spawnRate = 60;
+
+  }
+}
+
 function keyPressed(){
   //switch between backgrounds if the 'b' key is pressed
   if (key === "b"){
@@ -330,11 +381,27 @@ function keyPressed(){
     }
   }
 
-  //Use space to shoot
+  //use space to shoot
   if (keyCode === 32){
     if (gameStart && !gameEnded){
       birdShip.fire();
       mainProjectileSound.play();
+    }
+  }
+
+  //use m to switch between difficulty modes
+  if (key === "m"){
+    if (!gameStart && gameEnded){
+      
+      if (gameMode === "easy"){
+        gameMode = "hard";
+        return;
+      }
+      
+      if (gameMode === "hard"){
+        gameMode = "easy";
+        return;
+      }
     }
   }
 }
@@ -499,11 +566,20 @@ function enemyProjHitPlayer(enemy){
   for (let i = enemy.projectileArray.length - 1; i >= 0; i--){
     let projectile = enemy.projectileArray[i];
 
-    //if a projectile has hit the player, splice the projectile, decrease the birdship health, and play hit sound
+    //if a projectile has hit the player, splice the projectile
     if (isColliding(birdShip, projectile)){
       enemy.projectileArray.splice(i, 1);
-      birdShip.health --;
-      birdHitSound.play();
+
+      // tick down the birdship health and play hit sound if birdship is not invincible
+      if (birdShip.invulerabilityTimer <=0){
+        birdShip.health --;
+        birdHitSound.play();
+      }
+      
+      // make birdship invincible for 1 second if it is not already invincible
+      if (birdShip.invulerabilityTimer <= 0){
+        birdShip.invulerabilityTimer = 60;
+      }
     }
   }
 }
@@ -597,12 +673,20 @@ class FriendlyCharacter extends Character{
 
     // sets the friendly character health to 3
     this.health = 3;
+
+    // timer that controls when the birdship in invincible
+    this.invulerabilityTimer = 0;
   }
 
   update(){
     //have the friendly character follow the mouse
     this.x = mouseX;
     this.y = mouseY;
+
+    //tick down invulerability timer
+    if (this.invulerabilityTimer > 0){
+      this.invulerabilityTimer--;
+    }
   }
 
   fire(){
