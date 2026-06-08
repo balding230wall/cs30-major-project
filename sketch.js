@@ -329,6 +329,14 @@ function keyPressed(){
       currentBackground = background2Img;
     }
   }
+
+  //Use space to shoot
+  if (keyCode === 32){
+    if (gameStart && !gameEnded){
+      birdShip.fire();
+      mainProjectileSound.play();
+    }
+  }
 }
 
 function mouseClicked(){
@@ -584,7 +592,7 @@ class Character{
 
 class FriendlyCharacter extends Character{
   //create the friendly character sub class from the character class with x, y, image, and health
-  constructor(x, y, theImage, health){
+  constructor(x, y, theImage){
     super(x, y, theImage);
 
     // sets the friendly character health to 3
@@ -606,7 +614,7 @@ class FriendlyCharacter extends Character{
 
 class EnemyCharacter extends Character{
   //create the enemy character sub class from the character class with x, y, image, dx, and dy
-  constructor(x, y, theImage, dx, dy){
+  constructor(x, y, theImage){
     super(x, y, theImage);
 
     //sets dx and dy to random, and sets the its status to alive
