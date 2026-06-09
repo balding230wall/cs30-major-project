@@ -63,8 +63,8 @@ let gameWon = false;
 let victorySoundPlayed = false;
 let defeatSoundPlayed = false;
 let bossDefeatSoundPlayed = false;
-let startMusic = false;
 let spawnBird = false;
+let informationTabOpen = false;
 
 //creaing arrays for normal enemies
 let clownEnemies = [];
@@ -84,8 +84,10 @@ let clownFireRate;
 let crazyClownFireRate;
 let robotFireRate;
 
-// sets game mode
+// controls the game mode
 let gameMode = "easy";
+let modeText = "";
+let modeTextFade = 0;
 
 function preload(){
   //loading images
@@ -142,11 +144,13 @@ function draw() {
   modeSettings();
   createMainMenu();
   createBackground();
+  openInstructions();
   playMusic();
   createCharacters();
   createHearts();
   displayScore();
   endGame();
+  displayModeText();
 }
 
 function createMainMenu(){
@@ -330,6 +334,28 @@ function displayBossHealth(){
   }
 }
 
+function showModeText(text){
+  //sets text content and text opacity
+  modeText = text;
+  modeTextFade = 255;
+}
+
+function displayModeText(){
+  //slowly fade text
+  modeTextFade--;
+
+  //draw text displaying current mode
+  if (modeTextFade > 0){
+    push();
+    fill(255, modeTextFade);
+    textAlign(CENTER, CENTER);
+    textSize(40);
+    text(modeText, windowWidth/2, windowHeight/2);
+    pop();
+  }
+
+}
+
 function modeSettings(){
   //settings for easy mode
   if (gameMode === "easy"){
@@ -370,6 +396,23 @@ function modeSettings(){
   }
 }
 
+function openInstructions(){
+  //creates the instructions tab
+  if (informationTabOpen){
+    push();
+    fill(0, 0, 0, 180);
+    rect(windowWidth/4, windowHeight/4, windowWidth/2, windowHeight/2);
+
+    fill(255);
+    textAlign(CENTER);
+    textSize(24);
+
+    //instructions
+    text("Move your character with you mouse. Left click or use space to shoot. Defeat enemies to gain points. After a certain amount of points, there will be a boss fight. Press m in the main menu to toggle difficulty level. Press b at anytime to toggle the background. Press i to exit out of the instructions.", windowWidth/4, windowHeight/4, windowWidth/2, windowHeight/2);
+    pop();
+  }
+}
+
 function keyPressed(){
   //switch between backgrounds if the 'b' key is pressed
   if (key === "b"){
@@ -395,12 +438,28 @@ function keyPressed(){
       
       if (gameMode === "easy"){
         gameMode = "hard";
+        showModeText("Hard Mode Activated");
         return;
       }
       
       if (gameMode === "hard"){
         gameMode = "easy";
+        showModeText("Easy Mode Activated");
         return;
+      }
+    }
+  }
+
+  //use i to get instructions for the game
+  if (key === "i"){
+    if (!gameStart && gameEnded){
+      
+      if (!informationTabOpen){
+        informationTabOpen = true;
+      }
+      
+      else if (informationTabOpen){
+        informationTabOpen = false;
       }
     }
   }
@@ -410,19 +469,10 @@ function mouseClicked(){
   //start audio
   userStartAudio();
 
-  //if the game has not yet begun
+  //starts the game
   if (!gameStart && gameEnded){
-    
-    //if the game has been loaded up for the first time, the first click starts the main menu music
-    if(!startMusic){
-      startMusic = true;
-      return;
-    }
-    //if this is not the first click after the game has been loaded up, it starts the game
-    else{
-      gameStart = true;
-      gameEnded = false;
-    }
+    gameStart = true;
+    gameEnded = false;
   }
 
   //if the game has been started
@@ -430,6 +480,7 @@ function mouseClicked(){
     //the first click spawns the bird
     if (!spawnBird){
       spawnBird = true;
+      informationTabOpen = false;
       return;
     }
     //all other clicks after the bird has been spawned makes the bird fire and plays the sound effect
@@ -683,6 +734,26 @@ class FriendlyCharacter extends Character{
     //have the friendly character follow the mouse
     this.x = mouseX;
     this.y = mouseY;
+
+    //prevents bird from going off screen on the left
+    if (this.x < 0){
+      this.x = 0;
+    }
+
+    //prevents the bird from going past the middle of the screen
+    if (this.x + this.image.width/2 * characterScale > windowWidth/2){
+      this.x = windowWidth/2 - this.image.width/2 * characterScale;
+    }
+
+    //prevents the bird from going off screen on the top
+    if (this.y < 0){
+      this.y = 0;
+    }
+
+    //prevents the bird from going off screen on the bottom
+    if (this.y + this.image.height/2 * characterScale > windowHeight){
+      this.y = windowHeight - this.image.height/2 * characterScale;
+    }
 
     //tick down invulerability timer
     if (this.invulerabilityTimer > 0){
