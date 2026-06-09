@@ -84,7 +84,7 @@ let clownFireRate;
 let crazyClownFireRate;
 let robotFireRate;
 
-// controls the game mode
+//controls the game mode
 let gameMode = "easy";
 let modeText = "";
 let modeTextFade = 0;
@@ -279,10 +279,19 @@ function bossFunctions(){
     boss.display();
   }
   
-  //if the boss is fully on screen and the boss fight has officially started, it fires 5 times a second
+  //if the boss is fully on screen and the boss fight has officially started, the boss starts shooting
   if (boss.enteredScreen){
     if (frameCount % bossFireRate === 0){
-      boss.bossFire();
+      
+      //fire mode for easy mode
+      if (gameMode === "easy"){
+        boss.bossFire();
+      }
+      
+      //fire mode for hard mode
+      if (gameMode === "hard"){
+        boss.bossFire2();
+      }
     }
     //detect if a player has hit the boss or if the boss has hit the player
     enemyProjHitPlayer(boss);
@@ -359,40 +368,64 @@ function displayModeText(){
 function modeSettings(){
   //settings for easy mode
   if (gameMode === "easy"){
-    //fire rates
-    bossFireRate = 12;
+
+    //sets boss health
+    if (!gameStart && gameEnded){
+      boss.health = 100;
+    }
+
+    //set normal enemies fire rates
     clownFireRate = 120;
     crazyClownFireRate = 60;
     robotFireRate = 180;
 
+    //sets boss fire rates. If the boss is below half health, its fire rate doubles
+    if (boss.health > 50){
+      bossFireRate = 12;
+    }
+    else{
+      bossFireRate = 6;
+    }
+
     //score to trigger boss fight
-    scoreToWin = 20;
+    scoreToWin = 100;
 
     //max number of enemies allowed
     maxEnemiesAllowed = 9;
 
     //spawn rate
     spawnRate = 120;
-
   }
 
   //settings for hard mode
   if (gameMode === "hard"){
-    //fire rates
-    bossFireRate = 6;
+
+    //set boss health
+    if (!gameStart && gameEnded){
+      boss.health = 200;
+    }
+
+    //sets normal enemies fire rates
     clownFireRate = 60;
     crazyClownFireRate = 30;
     robotFireRate = 90;
 
+    //sets boss fire rates. If the boss is below half health, its fire rate doubles
+    if (boss.health > 100){
+      bossFireRate = 6;
+    }
+    else{
+      bossFireRate = 3;
+    }
+
     //score to trigger boss fight
-    scoreToWin = 50;
+    scoreToWin = 200;
 
     //max number of enemies allowed
     maxEnemiesAllowed = 15;
 
     //spawn rate
     spawnRate = 60;
-
   }
 }
 
@@ -817,8 +850,8 @@ class Boss extends Character{
   constructor(x, y, theImage){
     super(x, y, theImage);
 
-    //sets boss health to 50
-    this.health = 50;
+    //sets boss health
+    this.health;
 
     //sets the boss's x position to be initially off screen
     this.x = windowWidth + this.image.width;
@@ -875,6 +908,19 @@ class Boss extends Character{
     //create a new boss projectile and push it into the projectile array
     let bossEnemyProjectile = new EnemyProjectile(this.x - this.image.width * bossScale * 0.5, this.y, randomDx, randomDy, bossProjectileImg);
     this.projectileArray.push(bossEnemyProjectile);
+  }
+
+  bossFire2(){
+    //sets the dx and dy to make the boss's projectiles fire in random directions
+    let randomDx = random(-12, -8);
+    let randomDy = random(-6, 6);
+
+    //create 2 new boss projectiles and push it into the projectile array
+    let bossEnemyProjectile = new EnemyProjectile(this.x - this.image.width * bossScale * 0.5, this.y * 0.75, randomDx, randomDy, bossProjectileImg);
+    this.projectileArray.push(bossEnemyProjectile);
+
+    let anotherbossEnemyProjectile = new EnemyProjectile(this.x - this.image.width * bossScale * 0.5, this.y * 1.25, randomDx, randomDy, bossProjectileImg);
+    this.projectileArray.push(anotherbossEnemyProjectile);
   }
 }
 
