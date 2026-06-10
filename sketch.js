@@ -79,7 +79,7 @@ let score = 0;
 let scoreToWin;
 
 //fire rates
-let bossFireRate;
+let bossFireRate = 12;
 let clownFireRate;
 let crazyClownFireRate;
 let robotFireRate;
@@ -88,6 +88,9 @@ let robotFireRate;
 let gameMode = "easy";
 let modeText = "";
 let modeTextFade = 0;
+
+//variable that holds the value of the boss's full health
+let bossFullHealth;
 
 function preload(){
   //loading images
@@ -338,7 +341,7 @@ function displayBossHealth(){
     //creates the red health bar that goes down with the boss's health
     push();
     fill("red");
-    rect(windowWidth/3 * 2, 70, boss.health * (windowWidth/150), 20);
+    rect(windowWidth/3 * 2, 70, boss.health * (windowWidth/(3 * bossFullHealth)), 20);
     pop();
   }
 }
@@ -372,6 +375,7 @@ function modeSettings(){
     //sets boss health
     if (!gameStart && gameEnded){
       boss.health = 100;
+      bossFullHealth = 100;
     }
 
     //set normal enemies fire rates
@@ -379,11 +383,8 @@ function modeSettings(){
     crazyClownFireRate = 60;
     robotFireRate = 180;
 
-    //sets boss fire rates. If the boss is below half health, its fire rate doubles
-    if (boss.health > 50){
-      bossFireRate = 12;
-    }
-    else{
+    //If the boss is below half health, its fire rate doubles
+    if (boss.health <= 50){
       bossFireRate = 6;
     }
 
@@ -403,6 +404,7 @@ function modeSettings(){
     //set boss health
     if (!gameStart && gameEnded){
       boss.health = 200;
+      bossFullHealth = 200;
     }
 
     //sets normal enemies fire rates
@@ -410,12 +412,9 @@ function modeSettings(){
     crazyClownFireRate = 30;
     robotFireRate = 90;
 
-    //sets boss fire rates. If the boss is below half health, its fire rate doubles
-    if (boss.health > 100){
+    //If the boss is below half health, its fire rate doubles
+    if (boss.health <= 100){
       bossFireRate = 6;
-    }
-    else{
-      bossFireRate = 3;
     }
 
     //score to trigger boss fight
@@ -534,7 +533,7 @@ function mouseClicked(){
     }
     
     //resets all conditions needed for a fresh clean start again 
-    birdShip.health = 3;
+    birdShip.health = 5;
     totalEnemies = 0;
     score = 0;
     boss.health = 50;
@@ -544,7 +543,6 @@ function mouseClicked(){
     defeatSoundPlayed = false;
     bossDefeatSoundPlayed = false;
     spawnBird = false;
-    gameMode = "easy";
 
     //empty out all arrays for next game
     clownEnemies = [];
@@ -757,7 +755,7 @@ class FriendlyCharacter extends Character{
     super(x, y, theImage);
 
     // sets the friendly character health to 3
-    this.health = 3;
+    this.health = 5;
 
     // timer that controls when the birdship in invincible
     this.invulerabilityTimer = 0;
