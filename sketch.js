@@ -80,7 +80,7 @@ let score = 0;
 let scoreToWin;
 
 //fire rates
-let bossFireRate = 12;
+let bossFireRate;
 let clownFireRate;
 let crazyClownFireRate;
 let robotFireRate;
@@ -384,6 +384,8 @@ function modeSettings(){
     crazyClownFireRate = 60;
     robotFireRate = 180;
 
+    //sets the boss's fire rate
+    bossFireRate = 12;
     //If the boss is below half health, its fire rate doubles
     if (boss.health <= 50){
       bossFireRate = 6;
@@ -413,9 +415,11 @@ function modeSettings(){
     crazyClownFireRate = 30;
     robotFireRate = 90;
 
+    //sets the boss's fire rate
+    bossFireRate = 15;
     //If the boss is below half health, its fire rate doubles
     if (boss.health <= 100){
-      bossFireRate = 6;
+      bossFireRate = 7.5;
     }
 
     //score to trigger boss fight
@@ -667,9 +671,9 @@ function enemyProjHitPlayer(enemy){
         birdHitSound.play();
       }
       
-      // make birdship invincible for 1 second if it is not already invincible
+      // make birdship invincible for 2 seconds if it is not already invincible
       if (birdShip.invulerabilityTimer <= 0){
-        birdShip.invulerabilityTimer = 60;
+        birdShip.invulerabilityTimer = 120;
       }
     }
   }
