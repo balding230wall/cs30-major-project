@@ -65,6 +65,7 @@ let defeatSoundPlayed = false;
 let bossDefeatSoundPlayed = false;
 let spawnBird = false;
 let informationTabOpen = false;
+let musicStarted = false;
 
 //creaing arrays for normal enemies
 let clownEnemies = [];
@@ -501,10 +502,17 @@ function mouseClicked(){
   //start audio
   userStartAudio();
 
-  //starts the game
+  //If the game is on the main menu screen
   if (!gameStart && gameEnded){
-    gameStart = true;
-    gameEnded = false;
+    //After the game has been loaded up for the first time, the very first click starts the music
+    if (!musicStarted){ // *Note: There have been some inconsistencies with starting the music. On some days, the music starts automatically when the game loads up. On other days, the user needs to click the screen. This is here as a safety in case the music doesn't automatically start.
+      musicStarted = true;
+    }
+    //Starts the game if the music has started
+    else{
+      gameStart = true;
+      gameEnded = false;
+    }
   }
 
   //if the game has been started
